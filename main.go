@@ -1,16 +1,16 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
+
+func sum(numbers ...int) int {
+	total := 0
+	for _, number := range numbers {
+		total += number
+	}
+	return total
+}
 
 func main() {
-
-	// Constants
-	// const name string = "vins"
-	// Variables
-	var name1 string = "whos" // or
-	name2 := "vins"
-	fmt.Println(name1)
-	fmt.Println(name2)
+	result := sum(1,2,3,4,5,6)
+	fmt.Println(result)
 }
