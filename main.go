@@ -1,27 +1,31 @@
 package main
 
 import (
-	"fmt"
-	"strings"
+	"log"
+	"net/http"
 )
 
-func plus(a, b int) int {
-	return a + b
+var baseURL string = "https://kr.indeed.com/jobs?q=python&limit=50"
+
+func main(){
+	page := getPages()
 }
 
-func nameTat(name string) (int, string) {
-	return len(name), strings.ToUpper(name)
+func getPages() int {
+	res, err := http.Get(baseURL)
+	checkErr(err)
+	checkRes(res)
+	return 0
 }
 
-func sum(numbers ...int) int {
-	total := 0
-	for _, number := range numbers {
-		total += number
+func checkErr(err error) {
+	if err != nil {
+		log.Fatalln(err)
 	}
-	return total
 }
 
-func main() {
-	result := sum(1,2,3,4,5,6)
-	fmt.Println(result)
+func checkRes(res *http.Response){
+	if res.StatusCode != 200 {
+		log.Fatalln("Fail Status:", res.StatusCode)
+	}
 }
