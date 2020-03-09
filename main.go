@@ -10,7 +10,7 @@ import (
 var baseURL string = "https://kr.indeed.com/jobs?q=python&limit=50"
 
 func main() {
-	page := getPages()
+	getPages()
 }
 
 func getPages() int {
@@ -21,6 +21,9 @@ func getPages() int {
 	defer res.Body.Close()
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
+	checkErr(err)
+
+	doc.Find(".pagination")
 
 	return 0
 }
