@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -41,11 +42,16 @@ func getPage(page int) {
 	searchCards := doc.Find(".jobsearch-SerpJobCard")
 	searchCards.Each(func(i int, card *goquery.Selection) {
 		id, _ := card.Attr("data-jk")
-		title := card.Find(".title>a").Text()
-		location := card.Find("sjcl").Text()
+		title := cleanStr(card.Find(".title>a").Text())
+		location := cleanStr(card.Find("sjcl").Text())
 		fmt.Println(id, title, location)
 	})
 }
+
+func cleanStr(str string) string {
+	return strings.Join(strings.Fields(strings.TrimSpace(str)), " ")
+}
+
 
 func getPages() int {
 	pages := 0
@@ -77,6 +83,3 @@ func checkRes(res *http.Response) {
 	}
 }
 
-func cleanStr(str string) string {
-
-}
