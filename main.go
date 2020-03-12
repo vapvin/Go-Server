@@ -41,11 +41,15 @@ func getPage(page int) {
 
 	searchCards := doc.Find(".jobsearch-SerpJobCard")
 	searchCards.Each(func(i int, card *goquery.Selection) {
-		id, _ := card.Attr("data-jk")
-		title := cleanStr(card.Find(".title>a").Text())
-		location := cleanStr(card.Find("sjcl").Text())
-		fmt.Println(id, title, location)
+		extractJob(card) // return something
 	})
+}
+
+func extractJob(card *goquery.Selection){
+	id, _ := card.Attr("data-jk")
+	title := cleanStr(card.Find(".title>a").Text())
+	location := cleanStr(card.Find("sjcl").Text())
+	fmt.Println(id, title, location)
 }
 
 func cleanStr(str string) string {
