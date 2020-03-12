@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -28,11 +30,32 @@ func main() {
 		jobs = append(jobs, extractedJobs...)
 	}
 
-	fmt.Println(jobs)
+	writeJobs(jobs)
+	fmt.Println("Done!")
+}
+
+func writeJobs(jobs []extractedJob){
+	file, err := os.Create("jobs.csv")
+	checkErr(err)
+
+	w := csv.NewWriter(file)
+	defer w.Flush()
+
+	headers := []string{"ID", "Title", "Location", "Salary", "Summary"}
+
+	wErr := w.Write(headers)
+	checkErr(wErr)
+
+	for _, job := range jobs {
+		jobSlice := []string{"https://kr.indeed.com/viewjob?jk="+job.id, job.title, job.location, job.salary, job.summary}
+		jwErr := w.Write(jobSlice)
+		checkErr(jwErr)
+	}
 }
 
 func getPage(page int) []extractedJob {
 	var jobs []extractedJob
+	c := make(chan extractedJob)
 	pageURL := baseURL + "&start=" + strconv.Itoa(page*50)
 	fmt.Println("Request", pageURL)
 	res, err := http.Get(pageURL)
@@ -46,20 +69,23 @@ func getPage(page int) []extractedJob {
 
 	searchCards := doc.Find(".jobsearch-SerpJobCard")
 	searchCards.Each(func(i int, card *goquery.Selection) {
-		job := extractJob(card) // return something
-		jobs = append(jobs, job)
+		go extractJob(card, c) // return something
 	})
 
+	for i := 0; i < searchCards.Length(); i++{
+		job := <-c
+		jobs = append(jobs, job)
+	}
 	return jobs
 }
 
-func extractJob(card *goquery.Selection)extractedJob{
+func extractJob(card *goquery.Selection, c chan<- extractedJob){
 	id, _ := card.Attr("data-jk")
 	title := cleanStr(card.Find(".title>a").Text())
 	location := cleanStr(card.Find(".sjcl").Text())
 	salary := cleanStr(card.Find(".salaryText").Text())
 	summary := cleanStr(card.Find(".summary").Text())
-	return extractedJob{
+	c <- extractedJob{
 		id: id,
 		title: title,
 		location: location,
