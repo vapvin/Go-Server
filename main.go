@@ -136,4 +136,3 @@ func checkRes(res *http.Response) {
 		log.Fatalln("Fail Status:", res.StatusCode)
 	}
 }
-
