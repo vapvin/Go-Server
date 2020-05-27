@@ -1,9 +1,11 @@
 package main
 
 import (
-	"github.com/labstack/echo"
-	"github.com/vapvin/Go/scrapper"
 	"strings"
+
+	"github.com/labstack/echo"
+
+	"github.com/vapvin/Go/scrapper"
 )
 
 func handleHome(c echo.Context) error {
@@ -12,10 +14,10 @@ func handleHome(c echo.Context) error {
 
 func handleScrape(c echo.Context) error {
 	term := strings.ToLower(scrapper.CleanStr(c.FormValue("term")))
-	return c.File("")
+	return c.File(term)
 }
 
-func main(){
+func main() {
 	e := echo.New()
 	e.GET("/", handleHome)
 	e.POST("/scrape", handleScrape)
