@@ -29,7 +29,6 @@ func Scrape(term string) {
 	totalPages := getPages(baseURL)
 	for i := 0; i < totalPages; i++ {
 		go getPage(i, baseURL, c)
-
 	}
 
 	for i := 0; i < totalPages; i++ {
